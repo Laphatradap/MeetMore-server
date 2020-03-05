@@ -4,7 +4,7 @@ const User = require("../User/model");
 
 const Availability = sequelize.define("availability", {
   startDate: {
-    type: Sequelize.DATE,
+    type: Sequelize.STRING,
     allowNull: false
   },
   endDate: {
