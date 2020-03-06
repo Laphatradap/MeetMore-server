@@ -5,18 +5,34 @@ const User = require("../User/model");
 
 const router = new Router();
 
-// router.get("/availability", async (req, res, next) => {
-//   try {
-//     const availability = await Availability.findAll({include: [User]});
-//     res.send(availability);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+router.get("/availability/user/:id", async (req, res, next) => {
+  console.log("params", req.params.id)
+  try {
+    const availability = await Availability.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["username"]
+        }
+      ],
+      where: {
+        userId: req.params.id
+      }
+    });
+    if(!req.params.id) {
+      res.status(404).send("Availability not found!")
+    } else {
+      res.send(availability);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
-// router.get("/availability", auth, async (req, res, next) => {
+// router.get("/user/:id/availability", auth, async (req, res, next) => {
 //   try {
 //     const allAvailability = { ...req.body, userId: req.user.dataValues.id };
+//     console.log("allAvailabilityUser", allAvailability)
 //     await Availability.findAll({
 //       include: [
 //         {
