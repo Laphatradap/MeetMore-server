@@ -22,7 +22,7 @@ router.post("/groups", async (req, res, next) => {
 
 router.get("/groups/user/:id", async (req,res,next) => {
   try {
-    const oneGroup = await Group.findAll({
+    const groupOfThatUser = await Group.findAll({
       include: [
         {
           model: User,
@@ -36,7 +36,7 @@ router.get("/groups/user/:id", async (req,res,next) => {
     if(!req.params.id) {
       res.status(404).send("Group not found!")
     } else {
-      res.json(oneGroup)
+      res.json(groupOfThatUser)
     }
   } catch (error) {
     next (error)
