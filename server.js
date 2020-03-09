@@ -3,9 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 // const authMiddleware = require("./auth/authMiddleware")
-const userRoutes = require("./User/model");
-const availabilityRoutes = require("./Availability/model")
-const groupRoutes = require("./Group/model")
+const userRoutes = require("./User/router");
+const availabilityRoutes = require("./Availability/router")
+const groupRoutes = require("./Group/router")
 const userGroupRoutes = require("./UserGroup/model")
 const port = process.env.PORT || 4000;
 const app = express();

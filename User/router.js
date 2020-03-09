@@ -53,7 +53,7 @@ router.post("/login", async (req, res) => {
     });
   } else if (bcrypt.compareSync(password, user.password)) {
     const token = toJWT({ id: user.id });
-    res.status(200).send({ token: token, email:user.email, id:user.id });
+    res.status(200).send({ token: token, username: user.username, email:user.email, id:user.id });
   } else {
     res.status(400).send({
       message: "Password was incorrect"
