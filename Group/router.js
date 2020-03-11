@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const Group = require("./model");
-const User = require("../User/model");
+const GroupUser = require("../GroupUser/model");
 const router = new Router();
 
 // Create a new group
@@ -13,29 +13,31 @@ router.post("/groups", async (req, res, next) => {
   }
 });
 
-// TO DO fix the id to be userId, as of now the id is the groupId
+// Fetch all groups based on userId from GroupUser table
 router.get("/groups/user/:id", async (req, res, next) => {
+  // Get userId from req.params.id
+  const userIdFromParams = req.params.id;
+
+  // Find groupIDs based on userId (e.g. userId 1 has groupId 1, 2, 3)
   try {
-    // console.log("user value", req.params.id)
-    const groupOfThatUser = await Group.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ["id", "username"]
-        }
-      ],
+    const groupIDsOfUser = await GroupUser.findAll({
       where: {
-        id: req.params.id
+        userId: userIdFromParams
       }
     });
-    if (!req.params.id) {
-      res.status(404).send("Group not found!");
+    if (!groupIDsOfUser) {
+      res.status(404).send("Groups not found!");
     } else {
-      res.json(groupOfThatUser);
+      // Get only groupIDs 
+      const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
+      // Filter out the groups that matched the groupIDs from Group table
+      const allGroups = await Group.findAll();
+      const groups = allGroups.filter(group => eachGroupId.includes(group.id));
+      const data = groups;
+      res.send(data);
     }
   } catch (error) {
     next(error);
   }
 });
-
 module.exports = router;

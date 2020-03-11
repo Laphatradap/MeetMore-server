@@ -15,14 +15,13 @@ const router = new Router();
 
 router.post("/groupUser", async (req, res, next) => {
   try {
-    await GroupUser
-      .create(req.body)
-      .then(gu => res.json(gu));
-      console.log("groupuser", req.body)
+    await GroupUser.create(req.body).then(gu => res.json(gu));
+    console.log("groupuser", req.body);
   } catch (error) {
     next(error);
   }
 });
+
 
 // router.post("/groups/:id", async (req, res, next) => {
 //   const groupId = req.params.id
