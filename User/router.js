@@ -6,7 +6,7 @@ const { toJWT } = require("../auth/jwt");
 
 const router = new Router();
 
-router.get("/user", async (req, res, next) => {
+router.get("/users", async (req, res, next) => {
   try {
     const allUsers = await User.findAll();
     res.json(allUsers);
