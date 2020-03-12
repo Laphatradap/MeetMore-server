@@ -28,7 +28,7 @@ router.get("/groups/user/:id", async (req, res, next) => {
     if (!groupIDsOfUser) {
       res.status(404).send("Groups not found!");
     } else {
-      // Get only groupIDs 
+      // Get only groupIDs
       const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
       // Filter out the groups that matched the groupIDs from Group table
       const allGroups = await Group.findAll();
@@ -40,4 +40,24 @@ router.get("/groups/user/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+// Fetch one group based on req.params.id to to see which group we are in
+router.get("/groups/:id", async (req, res, next) => {
+  console.log("id of groups", typeof req.params.id);
+  try {
+    const group = await Group.findAll({
+      where: {
+        id: req.params.id
+      }
+    });
+    if (!req.params.id) {
+      res.status(404).send("Group not found");
+    } else {
+      res.json(group);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

@@ -15,12 +15,25 @@ const router = new Router();
 
 router.post("/groupUser", async (req, res, next) => {
   try {
-    await GroupUser.create(req.body).then(gu => res.json(gu));
+    await GroupUser
+      .create(req.body)
+      .then(gu => res.json(gu));
     console.log("groupuser", req.body);
   } catch (error) {
     next(error);
   }
 });
+
+router.post("/groupUser/member", async (req, res, next) => {
+  console.log("req.body", req.body)
+  try {
+    await GroupUser
+      .create(req.body)
+      .then(result => res.json(result))
+  } catch (error) {
+    next (error)
+  }
+})
 
 
 // router.post("/groups/:id", async (req, res, next) => {
