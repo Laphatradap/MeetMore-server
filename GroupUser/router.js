@@ -1,40 +1,44 @@
 const { Router } = require("express");
-// const Group = require("./model");
-// const User = require("../User/model");
+const User = require("../User/model");
 const GroupUser = require("./model");
 const router = new Router();
 
-// router.get("/userGroup", async (req, res, next) => {
-//   try {
-//     const ug = UserGroup.findAll()
-//     res.send(ug);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+router.get("/groupUser/:id", async (req, res, next) => {
+  try {
+    let members = await GroupUser.findAll({
+      where: {
+        groupId: req.params.id
+      }
+    });
+    // get all members from groupUser based on groupId
+    const eachMemberId = members.map(member => member.userId);
+    const allMembers = await User.findAll();
+    const membersList = allMembers.filter(member =>
+      eachMemberId.includes(member.id)
+    );
+    const memberUsernames = membersList.map(name => name.username);
+    res.json(memberUsernames);
+    console.log("OUTPUT: memberUsernames", memberUsernames)
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.post("/groupUser", async (req, res, next) => {
   try {
-    await GroupUser
-      .create(req.body)
-      .then(gu => res.json(gu));
-    console.log("groupuser", req.body);
+    await GroupUser.create(req.body).then(gu => res.json(gu));
   } catch (error) {
     next(error);
   }
 });
 
 router.post("/groupUser/member", async (req, res, next) => {
-  console.log("req.body", req.body)
   try {
-    await GroupUser
-      .create(req.body)
-      .then(result => res.json(result))
+    await GroupUser.create(req.body).then(result => res.json(result));
   } catch (error) {
-    next (error)
+    next(error);
   }
-})
-
+});
 
 // router.post("/groups/:id", async (req, res, next) => {
 //   const groupId = req.params.id

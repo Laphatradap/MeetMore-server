@@ -9,12 +9,12 @@ const router = new Router();
 
 // Fetch all users except the loggedUserId aka the group creator
 router.get("/users/:id", async (req, res, next) => {
-  const userId = req.params.id;
+  const userIdFromParams = req.params.id;
   try {
     const allUsersExceptCreator = await User.findAll({
       where: {
         id: {
-          [Op.ne]: userId
+          [Op.ne]: userIdFromParams
         }
       }
     });

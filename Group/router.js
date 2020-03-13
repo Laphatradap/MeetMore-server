@@ -41,7 +41,7 @@ router.get("/groups/user/:id", async (req, res, next) => {
   }
 });
 
-// Fetch one group based on req.params.id to to see which group we are in
+// Fetch one group based on req.params.id to to see which group the user are in
 router.get("/groups/:id", async (req, res, next) => {
   console.log("id of groups", typeof req.params.id);
   try {
