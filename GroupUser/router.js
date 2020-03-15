@@ -15,10 +15,11 @@ router.get("/groupUser/:id", async (req, res, next) => {
     const allMembers = await User.findAll();
     const membersList = allMembers.filter(member =>
       eachMemberId.includes(member.id)
-    );
-    const memberUsernames = membersList.map(name => name.username);
+      );
+    
+    // Get values out
+    const memberUsernames = membersList.map(name => name.dataValues);
     res.json(memberUsernames);
-    console.log("OUTPUT: memberUsernames", memberUsernames)
   } catch (error) {
     next(error);
   }
