@@ -15,8 +15,8 @@ router.get("/groupUser/:id", async (req, res, next) => {
     const allMembers = await User.findAll();
     const membersList = allMembers.filter(member =>
       eachMemberId.includes(member.id)
-      );
-    
+    );
+
     // Get values out
     const memberUsernames = membersList.map(name => name.dataValues);
     res.json(memberUsernames);
