@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const userRoutes = require("./User/router");
 const availabilityRoutes = require("./Availability/router")
 const groupRoutes = require("./Group/router")
-const userGroupRoutes = require("./UserGroup/model")
+const groupUserRoutes = require("./GroupUser/router")
 const port = process.env.PORT || 4000;
 const app = express();
 
@@ -16,5 +16,5 @@ app
   .use(userRoutes)
   .use(availabilityRoutes)
   .use(groupRoutes)
-  .use(userGroupRoutes)
+  .use(groupUserRoutes)
   .listen(port, () => console.log("listening on port " + port));

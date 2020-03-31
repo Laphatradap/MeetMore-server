@@ -2,16 +2,25 @@ const { Router } = require("express");
 const User = require("./model");
 const bcrypt = require("bcrypt");
 const { toJWT } = require("../auth/jwt");
+const { Op } = require("sequelize");
 // const auth = require("../auth/authMiddleware")
 
 const router = new Router();
 
-router.get("/user", async (req, res, next) => {
+// Fetch all users except the loggedUserId aka the group creator
+router.get("/users/:id", async (req, res, next) => {
+  const userIdFromParams = req.params.id;
   try {
-    const allUsers = await User.findAll();
-    res.json(allUsers);
-  } catch (e) {
-    next(e);
+    const allUsersExceptCreator = await User.findAll({
+      where: {
+        id: {
+          [Op.ne]: userIdFromParams
+        }
+      }
+    });
+    res.json(allUsersExceptCreator);
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -53,13 +62,17 @@ router.post("/login", async (req, res) => {
     });
   } else if (bcrypt.compareSync(password, user.password)) {
     const token = toJWT({ id: user.id });
-    res.status(200).send({ token: token, username: user.username, email:user.email, id:user.id });
+    res.status(200).send({
+      token: token,
+      username: user.username,
+      email: user.email,
+      id: user.id
+    });
   } else {
     res.status(400).send({
       message: "Password was incorrect"
     });
   }
 });
-
 
 module.exports = router;

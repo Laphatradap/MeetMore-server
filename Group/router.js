@@ -1,46 +1,78 @@
 const { Router } = require("express");
-const Group = require("./model")
-// const auth = require("../auth/authMiddleware")
-const User = require("../User/model")
+const Group = require("./model");
+const GroupUser = require("../GroupUser/model");
+const User = require("../User/model");
 const router = new Router();
 
+// Create a new group
 router.post("/groups", async (req, res, next) => {
   try {
-    // console.log("user value", req.user.dataValues.id)
-    console.log("req", req.user)
-    // const newGroup = {...req.body, userId: req.user.dataValues.id}
-    await Group
-      .create(req.body)
-      .then(group => res.json(group))
+    await Group.create(req.body).then(group => res.json(group));
   } catch (error) {
     next(error);
-    // if (error.name === "SequelizeUniqueConstraintError") {
-    //   return res.status(409).send("Group already exists!");
-    // }
   }
 });
 
-router.get("/groups/user/:id", async (req,res,next) => {
+// Fetch all groups based on userId from GroupUser table
+router.get("/groups/user/:id", async (req, res, next) => {
+  // Get userId from req.params.id
+  const userIdFromParams = req.params.id;
+
+  // Find groupIDs based on userId (e.g. userId 1 has groupId 1, 2, 3)
   try {
-    const oneGroup = await Group.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ["id", "username"]
-        }
-      ],
+    const groupIDsOfUser = await GroupUser.findAll({
       where: {
-        userId: req.params.id
+        userId: userIdFromParams
       }
-    })
-    if(!req.params.id) {
-      res.status(404).send("Group not found!")
+    });
+    if (!groupIDsOfUser) {
+      res.status(404).send("Groups not found!");
     } else {
-      res.json(oneGroup)
+      // Get only groupIDs
+      const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
+      const members = await Group.findAll({
+        where: {
+          id: eachGroupId
+        },
+        include: {
+          model: User,
+          through: { attributes: [] }
+        }
+      });
+      res.send(members);
     }
   } catch (error) {
-    next (error)
+    next(error);
   }
-})
+});
 
-module.exports = router
+// Fetch one group based on req.params.id to to see which group the user are in
+router.get("/groups/:id", async (req, res, next) => {
+  try {
+    const groupInfo = await Group.findAll({
+      where: {
+        id: req.params.id
+      }
+    });
+    if (!req.params.id) {
+      res.status(404).send("Group not found");
+    } else {
+      // Get all users(members) of that group from groupUser table
+      const groupId = groupInfo[0].dataValues.id;
+      const members = await Group.findAll({
+        where: {
+          id: groupId
+        },
+        include: {
+          model: User,
+          through: { attributes: [] }
+        }
+      });
+      res.json(members);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = router;
