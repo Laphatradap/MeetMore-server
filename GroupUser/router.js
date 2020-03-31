@@ -41,15 +41,4 @@ router.post("/groupUser/member", async (req, res, next) => {
   }
 });
 
-// router.post("/groups/:id", async (req, res, next) => {
-//   const groupId = req.params.id
-//   try {
-//     const group = await Group.
-//     console.log("req of UserGroup", req.body);
-//     await UserGroup.create(req.body).then(ug => res.json(ug));
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 module.exports = router;

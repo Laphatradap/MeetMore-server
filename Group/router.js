@@ -7,7 +7,6 @@ const router = new Router();
 // Create a new group
 router.post("/groups", async (req, res, next) => {
   try {
-    // console.log("req of groups", req.body);
     await Group.create(req.body).then(group => res.json(group));
   } catch (error) {
     next(error);
@@ -31,12 +30,6 @@ router.get("/groups/user/:id", async (req, res, next) => {
     } else {
       // Get only groupIDs
       const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
-      // console.log("OUTPUT: eachGroupId", eachGroupId);
-      // Filter out the groups that matched the groupIDs from Group table
-      // const allGroups = await Group.findAll();
-      // const groups = allGroups.filter(group => eachGroupId.includes(group.id));
-      // console.log("OUTPUT: groups", groups)
-
       const members = await Group.findAll({
         where: {
           id: eachGroupId
@@ -55,7 +48,6 @@ router.get("/groups/user/:id", async (req, res, next) => {
 
 // Fetch one group based on req.params.id to to see which group the user are in
 router.get("/groups/:id", async (req, res, next) => {
-  // console.log("id of groups", req.params.id);
   try {
     const groupInfo = await Group.findAll({
       where: {
@@ -67,23 +59,6 @@ router.get("/groups/:id", async (req, res, next) => {
     } else {
       // Get all users(members) of that group from groupUser table
       const groupId = groupInfo[0].dataValues.id;
-      // const usersFromGroup = await GroupUser.findAll({
-      //   where: {
-      //     groupId: groupId
-      //   }
-      // });
-      // const memberIds = usersFromGroup.map(user => user.dataValues.userId);
-      // const allMembers = await User.findAll();
-      // const membersList = allMembers.filter(member =>
-      //   memberIds.includes(member.id)
-      // );
-      // // Get values out
-      // const memberUsernames = membersList.map(name => name.dataValues);
-
-      // res.json({
-      //   info: groupInfo,
-      //   members: memberUsernames
-      // });
       const members = await Group.findAll({
         where: {
           id: groupId

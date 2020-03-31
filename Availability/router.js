@@ -32,10 +32,8 @@ router.get("/availability/user/:id", async (req, res, next) => {
 
 // Add a new availability to the table
 router.post("/availability", auth, async (req, res, next) => {
-  // console.log("user value", req.user);
   try {
     const newAvailability = { ...req.body, userId: req.user.dataValues.id };
-    // console.log("newAvailability", newAvailability)
     await Availability.create(newAvailability).then(entity => res.json(entity));
   } catch (error) {
     next(error);
