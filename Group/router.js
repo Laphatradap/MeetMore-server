@@ -1,19 +1,20 @@
 const { Router } = require("express");
 const Group = require("./model");
 const GroupUser = require("../GroupUser/model");
+const Availability = require("../Availability/model");
 const User = require("../User/model");
 const router = new Router();
 
 // Create a new group
 router.post("/groups", async (req, res, next) => {
   try {
-    await Group.create(req.body).then(group => res.json(group));
+    await Group.create(req.body).then((group) => res.json(group));
   } catch (error) {
     next(error);
   }
 });
 
-// Fetch all groups based on userId from GroupUser table
+// Fetch all groups based on userId from GroupUser table with availability
 router.get("/groups/user/:id", async (req, res, next) => {
   // Get userId from req.params.id
   const userIdFromParams = req.params.id;
@@ -22,8 +23,8 @@ router.get("/groups/user/:id", async (req, res, next) => {
   try {
     const groupIDsOfUser = await GroupUser.findAll({
       where: {
-        userId: userIdFromParams
-      }
+        userId: userIdFromParams,
+      },
     });
     if (!groupIDsOfUser) {
       res.status(404).send("Groups not found!");
@@ -32,14 +33,18 @@ router.get("/groups/user/:id", async (req, res, next) => {
       const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
       const members = await Group.findAll({
         where: {
-          id: eachGroupId
+          id: eachGroupId,
         },
         include: {
           model: User,
-          through: { attributes: [] }
+          through: { attributes: [] },
+          // include availability of each user in the group
+          include: Availability
         }
       });
       res.send(members);
+      // console.log("OUTPUT: members", members.map(member => member.dataValues.users))
+      
     }
   } catch (error) {
     next(error);
@@ -51,8 +56,8 @@ router.get("/groups/:id", async (req, res, next) => {
   try {
     const groupInfo = await Group.findAll({
       where: {
-        id: req.params.id
-      }
+        id: req.params.id,
+      },
     });
     if (!req.params.id) {
       res.status(404).send("Group not found");
@@ -61,12 +66,12 @@ router.get("/groups/:id", async (req, res, next) => {
       const groupId = groupInfo[0].dataValues.id;
       const members = await Group.findAll({
         where: {
-          id: groupId
+          id: groupId,
         },
         include: {
           model: User,
-          through: { attributes: [] }
-        }
+          through: { attributes: [] },
+        },
       });
       res.json(members);
     }
