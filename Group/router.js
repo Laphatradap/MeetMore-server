@@ -1,9 +1,12 @@
 const { Router } = require("express");
+// const { Op } = require("sequelize");
 const Group = require("./model");
 const GroupUser = require("../GroupUser/model");
 const Availability = require("../Availability/model");
 const User = require("../User/model");
+
 const router = new Router();
+var moment = require("moment");
 
 // Create a new group
 router.post("/groups", async (req, res, next) => {
@@ -14,7 +17,7 @@ router.post("/groups", async (req, res, next) => {
   }
 });
 
-// Fetch all groups based on userId from GroupUser table with availability
+// Fetch all groups based on userId from GroupUser table
 router.get("/groups/user/:id", async (req, res, next) => {
   // Get userId from req.params.id
   const userIdFromParams = req.params.id;
@@ -30,7 +33,7 @@ router.get("/groups/user/:id", async (req, res, next) => {
       res.status(404).send("Groups not found!");
     } else {
       // Get only groupIDs
-      const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
+      const eachGroupId = groupIDsOfUser.map((connect) => connect.groupId);
       const members = await Group.findAll({
         where: {
           id: eachGroupId,
@@ -38,13 +41,9 @@ router.get("/groups/user/:id", async (req, res, next) => {
         include: {
           model: User,
           through: { attributes: [] },
-          // include availability of each user in the group
-          include: Availability
-        }
+        },
       });
       res.send(members);
-      // console.log("OUTPUT: members", members.map(member => member.dataValues.users))
-      
     }
   } catch (error) {
     next(error);
@@ -73,6 +72,8 @@ router.get("/groups/:id", async (req, res, next) => {
           through: { attributes: [] },
         },
       });
+      // console.log("OUTPUT: members", members)
+
       res.json(members);
     }
   } catch (error) {
