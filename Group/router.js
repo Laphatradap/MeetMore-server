@@ -1,8 +1,6 @@
 const { Router } = require("express");
-// const { Op } = require("sequelize");
 const Group = require("./model");
 const GroupUser = require("../GroupUser/model");
-const Availability = require("../Availability/model");
 const User = require("../User/model");
 
 const router = new Router();
@@ -12,6 +10,7 @@ var moment = require("moment");
 router.post("/groups", async (req, res, next) => {
   try {
     await Group.create(req.body).then((group) => res.json(group));
+    console.log("OUTPUT: group", group)
   } catch (error) {
     next(error);
   }
@@ -72,8 +71,6 @@ router.get("/groups/:id", async (req, res, next) => {
           through: { attributes: [] },
         },
       });
-      // console.log("OUTPUT: members", members)
-
       res.json(members);
     }
   } catch (error) {

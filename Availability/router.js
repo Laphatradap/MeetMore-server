@@ -10,7 +10,6 @@ var moment = require("moment");
 
 // Fetch all availabilities based on the userId
 router.get("/availability/user/:id", async (req, res, next) => {
-  console.log("params", req.params.id);
   try {
     const availability = await Availability.findAll({
       include: [
@@ -47,24 +46,19 @@ router.post("/availability", auth, async (req, res, next) => {
 
 // Fetch matchedAvailability
 router.get("/availability/:id", async (req, res, next) => {
-  // Get userId from req.params.id - to see who is loggedin
+  // Check who is loggedin
   const userIdFromParams = req.params.id;
-  // console.log("OUTPUT: userIdFromParams", userIdFromParams)
 
-  // To display the groups of loggedin user e.g userId 1 has groupId 1, 2, 3)
+  // Check e.g. userId 1 has groupId 1, 2, 3
   try {
     const groupIDsOfUser = await GroupUser.findAll({
       where: {
         userId: userIdFromParams,
       },
     });
-    // console.log("OUTPUT: groupIDsOfUser", groupIDsOfUser)
     if (!groupIDsOfUser) {
       res.status(404).send("Groups not found!");
     } else {
-      // Get only groupIDs
-
-      // Get all availabilities of users in the group and flat into one array
       function findMatch(members) {
         const availabilityList = members
           .map((member) =>
@@ -84,7 +78,6 @@ router.get("/availability/:id", async (req, res, next) => {
             obj["userId"] = el.userId;
             return obj;
           });
-        console.log("OUTPUT: availabilityList here", availabilityList);
 
         var criticalPoint = availabilityList
           .map((el) => [el.startDate, el.endDate])
@@ -107,6 +100,7 @@ router.get("/availability/:id", async (req, res, next) => {
 
           // For a match, we need two people
           const countMatches = usersAvailable.length;
+
           if (countMatches >= 2) {
             matches.push({
               rangeBegin,
@@ -116,7 +110,6 @@ router.get("/availability/:id", async (req, res, next) => {
             });
           }
         }
-
         return matches;
       }
 
@@ -138,15 +131,29 @@ router.get("/availability/:id", async (req, res, next) => {
         console.log("OUTPUT: members", members);
 
         const groupName = members.map((member) => member.groupName);
-        const userInfo = members.map((member) =>
-          member.users.map((user) => user.username)
-        );
+        const matchResult = findMatch(members);
+        const memberIds = matchResult
+          .map((result) => result.usersAvailable)
+          .flat(Infinity);
+        const memberNames = await User.findAll({
+          where: {
+            id: memberIds,
+          },
+          attributes: ["id", "username"],
+        });
+
+        const matchedRanges = matchResult.map((result) => {
+          var newObj = {};
+          newObj["rangeBegin"] = result.rangeBegin;
+          newObj["rangeEnd"] = result.rangeEnd;
+          return newObj;
+        });
 
         groupResult.push({
           groupId: currentGroup,
           groupName,
-          userInfo,
-          matches: findMatch(members),
+          memberNames,
+          matchedRanges
         });
       }
 
