@@ -10,7 +10,6 @@ var moment = require("moment");
 router.post("/groups", async (req, res, next) => {
   try {
     await Group.create(req.body).then((group) => res.json(group));
-    console.log("OUTPUT: group", group)
   } catch (error) {
     next(error);
   }
