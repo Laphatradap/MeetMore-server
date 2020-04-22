@@ -70,10 +70,10 @@ router.get("/availability/:id", async (req, res, next) => {
           .map((el) => {
             var obj = {};
             obj["startDate"] = moment(el.startDate)
-              .tz("UTC")
+              //.tz("UTC")
               .format("YYYYMMDD HHmm");
             obj["endDate"] = moment(el.endDate)
-              .tz("UTC")
+              //.tz("UTC")
               .format("YYYYMMDD HHmm");
             obj["userId"] = el.userId;
             return obj;
@@ -128,6 +128,17 @@ router.get("/availability/:id", async (req, res, next) => {
             include: Availability, // include availability of each user in the group
           },
         });
+        console.log(
+          "OUTPUT: members",
+          members
+            .map((member) =>
+              member.users.map((user) =>
+                user.availabilities.map((el) => el.dataValues)
+              )
+            )
+            .flat(Infinity)
+            .map((el) => el.startDate)
+        );
 
         const groupName = members.map((member) => member.groupName);
         const matchResult = findMatch(members);
@@ -152,7 +163,7 @@ router.get("/availability/:id", async (req, res, next) => {
           groupId: currentGroup,
           groupName,
           memberNames,
-          matchedRanges
+          matchedRanges,
         });
       }
 
