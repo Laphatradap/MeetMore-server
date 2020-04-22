@@ -19,6 +19,7 @@ router.get("/groupUser/:id", async (req, res, next) => {
 
     // Get values out
     const memberUsernames = membersList.map(name => name.dataValues);
+    console.log("OUTPUT: memberUsernames", memberUsernames)
     res.json(memberUsernames);
   } catch (error) {
     next(error);

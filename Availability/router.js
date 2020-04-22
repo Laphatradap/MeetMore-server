@@ -128,7 +128,6 @@ router.get("/availability/:id", async (req, res, next) => {
             include: Availability, // include availability of each user in the group
           },
         });
-        console.log("OUTPUT: members", members);
 
         const groupName = members.map((member) => member.groupName);
         const matchResult = findMatch(members);
