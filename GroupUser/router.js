@@ -5,7 +5,7 @@ const router = new Router();
 
 router.get("/groupUser/:id", async (req, res, next) => {
   try {
-    let members = await GroupUser.findAll({
+    const members = await GroupUser.findAll({
       where: {
         groupId: req.params.id
       }
@@ -18,7 +18,9 @@ router.get("/groupUser/:id", async (req, res, next) => {
       );
 
     // Get values out
-    const memberUsernames = membersList.map(name => name.dataValues);
+    const memberUsernames = membersList
+      .map(name => name.dataValues)
+      .map(value => ({id: value.id, username: value.username}))
     console.log("OUTPUT: memberUsernames", memberUsernames)
     res.json(memberUsernames);
   } catch (error) {
