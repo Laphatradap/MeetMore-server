@@ -16,7 +16,8 @@ router.get("/users/:id", async (req, res, next) => {
         id: {
           [Op.ne]: userIdFromParams
         }
-      }
+      },
+      attributes: ["id", "username"]
     });
     res.json(allUsersExceptCreator);
   } catch (error) {

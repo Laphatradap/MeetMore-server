@@ -2,12 +2,14 @@ const { Router } = require("express");
 const Group = require("./model");
 const GroupUser = require("../GroupUser/model");
 const User = require("../User/model");
+
 const router = new Router();
+var moment = require("moment");
 
 // Create a new group
 router.post("/groups", async (req, res, next) => {
   try {
-    await Group.create(req.body).then(group => res.json(group));
+    await Group.create(req.body).then((group) => res.json(group));
   } catch (error) {
     next(error);
   }
@@ -22,22 +24,22 @@ router.get("/groups/user/:id", async (req, res, next) => {
   try {
     const groupIDsOfUser = await GroupUser.findAll({
       where: {
-        userId: userIdFromParams
-      }
+        userId: userIdFromParams,
+      },
     });
     if (!groupIDsOfUser) {
       res.status(404).send("Groups not found!");
     } else {
       // Get only groupIDs
-      const eachGroupId = groupIDsOfUser.map(connect => connect.groupId);
+      const eachGroupId = groupIDsOfUser.map((connect) => connect.groupId);
       const members = await Group.findAll({
         where: {
-          id: eachGroupId
+          id: eachGroupId,
         },
         include: {
           model: User,
-          through: { attributes: [] }
-        }
+          through: { attributes: [] },
+        },
       });
       res.send(members);
     }
@@ -51,8 +53,8 @@ router.get("/groups/:id", async (req, res, next) => {
   try {
     const groupInfo = await Group.findAll({
       where: {
-        id: req.params.id
-      }
+        id: req.params.id,
+      },
     });
     if (!req.params.id) {
       res.status(404).send("Group not found");
@@ -61,12 +63,12 @@ router.get("/groups/:id", async (req, res, next) => {
       const groupId = groupInfo[0].dataValues.id;
       const members = await Group.findAll({
         where: {
-          id: groupId
+          id: groupId,
         },
         include: {
           model: User,
-          through: { attributes: [] }
-        }
+          through: { attributes: [] },
+        },
       });
       res.json(members);
     }
