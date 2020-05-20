@@ -7,6 +7,14 @@ const { Op } = require("sequelize");
 
 const router = new Router();
 
+router.get("/users", async((req, res,next) => {
+  try {
+    const allUsers = await User.findAll()
+    res.json(allUsers)
+  } catch(error) {
+    next(error)
+  }
+}))
 // Fetch all users except the loggedUserId aka the group creator
 router.get("/users/:id", async (req, res, next) => {
   const userIdFromParams = req.params.id;
