@@ -78,6 +78,7 @@ router.get("/availability/:id", async (req, res, next) => {
             obj["userId"] = el.userId;
             return obj;
           });
+        // console.log("OUTPUT: findMatch -> availabilityList", availabilityList);
 
         var criticalPoint = availabilityList
           .map((el) => [el.startDate, el.endDate])
@@ -86,6 +87,7 @@ router.get("/availability/:id", async (req, res, next) => {
         //get unique value
         criticalPoint = new Set(criticalPoint);
         criticalPoint = [...criticalPoint];
+        // console.log("OUTPUT: findMatch -> criticalPoint", criticalPoint);
 
         let matches = [];
         for (let index = 0; index < criticalPoint.length - 1; index++) {
@@ -128,42 +130,37 @@ router.get("/availability/:id", async (req, res, next) => {
             include: Availability, // include availability of each user in the group
           },
         });
-        console.log(
-          "OUTPUT: members",
-          members
-            .map((member) =>
-              member.users.map((user) =>
-                user.availabilities.map((el) => el.dataValues)
-              )
-            )
-            .flat(Infinity)
-            .map((el) => el.startDate)
-        );
 
+        // display groupuname, date ranges with names of people who can make it during that range
         const groupName = members.map((member) => member.groupName);
         const matchResult = findMatch(members);
+        console.log("OUTPUT: matchResult", matchResult);
+
         const memberIds = matchResult
           .map((result) => result.usersAvailable)
           .flat(Infinity);
-        const memberNames = await User.findAll({
+
+        const memberData = await User.findAll({
           where: {
             id: memberIds,
           },
           attributes: ["id", "username"],
         });
 
-        const matchedRanges = matchResult.map((result) => {
+        const availabilityInfo = matchResult.map((result) => {
           var newObj = {};
           newObj["rangeBegin"] = result.rangeBegin;
           newObj["rangeEnd"] = result.rangeEnd;
+          newObj["usernames"] = memberData.filter((data) =>
+            result.usersAvailable.includes(data.id)
+          );
           return newObj;
         });
 
         groupResult.push({
           groupId: currentGroup,
           groupName,
-          memberNames,
-          matchedRanges,
+          availabilityInfo,
         });
       }
 

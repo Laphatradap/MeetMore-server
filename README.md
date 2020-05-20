@@ -5,7 +5,12 @@
 ## What this project is about
 This is server-side for a full-stack application that I built, demonstrating my understanding of NodeJS, ExpressJS, Sequelize and PostgreSQL.
 
-## Data models for this project
+## Table of contents
+- **[Data model for this project](#data-model-for-this-project)**
+- **[Technologies used](#technologies-used)**
+- **[Client-side repository](#client-side)**
+
+## Data model for this project
 ![Data Models](./images/datamodels.png)
 
 ## Technologies used
@@ -14,4 +19,4 @@ This is server-side for a full-stack application that I built, demonstrating my 
 - **[Sequelize](./Availability/router.js)**
 - **[Bcrypt/JWT](./auth/authMiddleware.js)**
 
-*Checkout the client repository [here](https://github.com/Laphatradap/MeetMore-client).*
+*Checkout the client-side repository [here](https://github.com/Laphatradap/MeetMore-client).*
