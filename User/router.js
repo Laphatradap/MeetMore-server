@@ -7,14 +7,6 @@ const { Op } = require("sequelize");
 
 const router = new Router();
 
-router.get("/users", async((req, res,next) => {
-  try {
-    const allUsers = await User.findAll()
-    res.json(allUsers)
-  } catch(error) {
-    next(error)
-  }
-}))
 // Fetch all users except the loggedUserId aka the group creator
 router.get("/users/:id", async (req, res, next) => {
   const userIdFromParams = req.params.id;
@@ -22,10 +14,10 @@ router.get("/users/:id", async (req, res, next) => {
     const allUsersExceptCreator = await User.findAll({
       where: {
         id: {
-          [Op.ne]: userIdFromParams
-        }
+          [Op.ne]: userIdFromParams,
+        },
       },
-      attributes: ["id", "username"]
+      attributes: ["id", "username", "email"],
     });
     res.json(allUsersExceptCreator);
   } catch (error) {
@@ -44,7 +36,7 @@ router.post("/user", async (req, res) => {
   try {
     await User.create({
       ...req.body,
-      password: hashedPassword
+      password: hashedPassword,
     });
     res.status(201).send("User created");
   } catch (error) {
@@ -67,7 +59,7 @@ router.post("/login", async (req, res) => {
 
   if (!user) {
     res.status(400).send({
-      message: "User with that email does not exist"
+      message: "User with that email does not exist",
     });
   } else if (bcrypt.compareSync(password, user.password)) {
     const token = toJWT({ id: user.id });
@@ -75,11 +67,11 @@ router.post("/login", async (req, res) => {
       token: token,
       username: user.username,
       email: user.email,
-      id: user.id
+      id: user.id,
     });
   } else {
     res.status(400).send({
-      message: "Password was incorrect"
+      message: "Password was incorrect",
     });
   }
 });
