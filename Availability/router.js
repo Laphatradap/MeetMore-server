@@ -78,7 +78,7 @@ router.get("/availability/:id", async (req, res, next) => {
             obj["userId"] = el.userId;
             return obj;
           });
-        // console.log("OUTPUT: findMatch -> availabilityList", availabilityList);
+        console.log("OUTPUT: findMatch -> availabilityList", availabilityList);
 
         var criticalPoint = availabilityList
           .map((el) => [el.startDate, el.endDate])
@@ -99,6 +99,7 @@ router.get("/availability/:id", async (req, res, next) => {
             .map((el) => el.userId);
           usersAvailable = new Set(usersAvailable);
           usersAvailable = [...usersAvailable];
+          console.log("OUTPUT: findMatch -> usersAvailable", usersAvailable);
 
           // For a match, we need two people
           const countMatches = usersAvailable.length;
@@ -161,6 +162,8 @@ router.get("/availability/:id", async (req, res, next) => {
           groupId: currentGroup,
           groupName,
           availabilityInfo,
+          usersAvailable,
+          criticalPoint,
         });
       }
 
